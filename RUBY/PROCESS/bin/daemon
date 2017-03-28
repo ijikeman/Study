@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require_relative '../lib/cli'
+
+# For .instance method
+require 'singleton'
+
+cli = Lib::CLI.instance
+cli.parse
+cli.run
