@@ -1,0 +1,8 @@
+{
+  "id": "items",
+  "override_attributes": {
+    "httpd": {
+      "state": true
+    }
+  }
+}
