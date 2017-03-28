@@ -1,0 +1,3 @@
+require ["fileinto", "vacation-seconds", "envelope", "regex", "include"];
+include :personal ".domain_sieve/filter";
+keep;

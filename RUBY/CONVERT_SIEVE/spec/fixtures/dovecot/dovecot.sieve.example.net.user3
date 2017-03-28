@@ -1,0 +1,24 @@
+require ["fileinto", "vacation-seconds", "envelope", "regex"];
+vacation
+:seconds 86400
+:subject "testvacation"
+:from "uehata@firstserver.co.jp"
+"if regex :header Subject {
+redirect uehata@firstserver.co.jp
+aaa\
+}
+\
+\\";
+if not header :regex "Subject" "^TESTDESU.*$" {
+discard;
+stop;
+}
+if header :regex "To" "^tmatsumot@firstserver\\.co\\.jp.*$" {
+discard;
+stop;
+}
+redirect "uehata@firstserver.co.jp";
+if header :regex "Return-Path" "^.*TESTDESU.*$" {
+redirect "keiji.ue@gmail.com";
+}
+keep;

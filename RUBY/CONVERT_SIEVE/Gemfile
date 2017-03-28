@@ -1,0 +1,7 @@
+source 'http://rubygems.org'
+group :development do
+  gem 'pry'
+  gem 'rspec'
+  gem 'guard'
+  gem 'guard-rspec'
+end
