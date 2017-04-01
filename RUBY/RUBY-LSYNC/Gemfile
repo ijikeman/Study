@@ -1,0 +1,11 @@
+source 'http://rubygems.org'
+gem 'logger'
+gem 'rb-inotify'
+group :development do
+  gem 'guard'
+  gem 'pry'
+  gem 'guard-rspec'
+  gem 'rspec'
+  gem 'guard-rubocop'
+  gem 'rubocop'
+end
