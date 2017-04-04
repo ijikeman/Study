@@ -16,3 +16,4 @@ end
 my = MyClass.new
 my.InsMethod1
 MyClass.ClassMethod1
+MyClass.ClassMethod2
