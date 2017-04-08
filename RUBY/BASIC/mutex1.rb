@@ -4,14 +4,13 @@ m = Mutex.new
 
 ts = []
 3.times {|j|
-  p j
   ts << Thread.start {
-    m.synchronize {
+#    m.synchronize {
       5.times {|k|
         p "Thread No.#{j} count=#{k}"
         sleep rand * 0.1
       }
-    }
+#    }
   }
 }
 
