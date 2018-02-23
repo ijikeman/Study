@@ -1,0 +1,106 @@
+ex02-04ではライブラリでのバッファリングによってデータコピーの回数が一回ふえる為、ユーザ時間を多く消費している。
+
+$ strace /tmp/ex02-03  /tmp/test.txt /dev/null
+execve("/tmp/ex02-03", ["/tmp/ex02-03", "/tmp/test.txt", "/dev/null"], [/* 19 vars */]) = 0
+brk(0)                                  = 0x17b5000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fd062965000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=29177, ...}) = 0
+mmap(NULL, 29177, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fd06295d000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P \2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1857312, ...}) = 0
+mmap(NULL, 3965632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fd06237c000
+mprotect(0x7fd06253a000, 2097152, PROT_NONE) = 0
+mmap(0x7fd06273a000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1be000) = 0x7fd06273a000
+mmap(0x7fd062740000, 17088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fd062740000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fd06295c000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fd06295a000
+arch_prctl(ARCH_SET_FS, 0x7fd06295a740) = 0
+mprotect(0x7fd06273a000, 16384, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7fd062967000, 4096, PROT_READ) = 0
+munmap(0x7fd06295d000, 29177)           = 0
+open("/tmp/test.txt", O_RDONLY)         = 3
+open("/dev/null", O_WRONLY)             = 4
+read(3, "hoge\n", 4096)                 = 5
+write(4, "hoge\n", 5)                   = 5
+read(3, "", 4096)                       = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+
+
+
+# strace /tmp/ex02-04  /tmp/test.txt /dev/null
+execve("/tmp/ex02-03", ["/tmp/ex02-04", "/tmp/test.txt", "/dev/null"], [/* 19 vars */]) = 0
+brk(0)                                  = 0x2295000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f10b37ec000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=29177, ...}) = 0
+mmap(NULL, 29177, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f10b37e4000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P \2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1857312, ...}) = 0
+mmap(NULL, 3965632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f10b3203000
+mprotect(0x7f10b33c1000, 2097152, PROT_NONE) = 0
+mmap(0x7f10b35c1000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1be000) = 0x7f10b35c1000
+mmap(0x7f10b35c7000, 17088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f10b35c7000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f10b37e3000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f10b37e1000
+arch_prctl(ARCH_SET_FS, 0x7f10b37e1740) = 0
+mprotect(0x7f10b35c1000, 16384, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7f10b37ee000, 4096, PROT_READ) = 0
+munmap(0x7f10b37e4000, 29177)           = 0
+brk(0)                                  = 0x2295000
+brk(0x22b6000)                          = 0x22b6000
+open("/tmp/test.txt", O_RDONLY)         = 3
+open("/dev/null", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 4
+fstat(3, {st_mode=S_IFREG|0644, st_size=5, ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f10b37eb000
+read(3, "hoge\n", 4096)                 = 5
+read(3, "", 4096)                       = 0
+fstat(4, {st_mode=S_IFCHR|0666, st_rdev=makedev(1, 3), ...}) = 0
+ioctl(4, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or TCGETS, 0x7fff3a373e30) = -1 ENOTTY (Inappropriate ioctl for device)
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f10b37ea000
+read(3, "", 4096)                       = 0
+write(4, "hoge\n", 5)                   = 5
+exit_group(0)                           = ?
++++ exited with 0 +++
+
+バイナリのサイズ
+$ ls -al /tmp/ex02-0*
+-rwxr-xr-x 1 root root 8572 Feb 23 16:29 /tmp/ex02-01
+-rwxr-xr-x 1 root root 8661 Feb 23 16:29 /tmp/ex02-02
+-rwxr-xr-x 1 root root 8650 Feb 23 16:29 /tmp/ex02-03
+-rwxr-xr-x 1 root root 8653 Feb 23 16:29 /tmp/ex02-04
+
+$ size /tmp/ex02-0*
+   text	   data	    bss	    dec	    hex	filename
+   1306	    568	      8	   1882	    75a	/tmp/ex02-01
+   1449	    568	     24	   2041	    7f9	/tmp/ex02-02
+   1489	    576	   4128	   6193	   1831	/tmp/ex02-03
+   1496	    576	   4128	   6200	   1838	/tmp/ex02-04
+
+通常はダイナミックリンクなのでスタティックリンク形式でコンパイルする
+$ gcc -static ex02-01.c -o /tmp/ex02-01
+$ gcc -static ex02-02.c -o /tmp/ex02-02
+$ gcc -static ex02-03.c -o /tmp/ex02-03
+$ gcc -static ex02-04.c -o /tmp/ex02-04
+$ ls -l /tmp/ex02-0*
+-rwxr-xr-x 1 root root 877055 Feb 23 16:30 /tmp/ex02-01
+-rwxr-xr-x 1 root root 877264 Feb 23 16:30 /tmp/ex02-02
+-rwxr-xr-x 1 root root 877079 Feb 23 16:30 /tmp/ex02-03
+-rwxr-xr-x 1 root root 877288 Feb 23 16:30 /tmp/ex02-04
+
+Linuxの場合だとprintfなど大きいライブラリも含まれてしまう為、サイズに差がないがBSDなどだとサイズに差があるようだ
