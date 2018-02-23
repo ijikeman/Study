@@ -1,0 +1,84 @@
+システムコールread/write()はfread/fwrite()よりもオーバヘッドが大きい
+理由はfreadは1バイト読み出しでもまとまった量をread()で読み出し、１バイトを返す為read()システムコールの回数を少なくしている。
+
+[debug]
+ex02-01は1バイトごとにread()/write()を読んでいる為、オーバーヘッドが大きい
+$ echo hoge /tmp/test.txt
+
+$ strace /tmp/ex02-01 < /tmp/test.txt > /dev/null
+execve("/tmp/ex02-01", ["/tmp/ex02-01"], [/* 19 vars */]) = 0
+brk(0)                                  = 0xe47000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fb6dd5ad000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=29177, ...}) = 0
+mmap(NULL, 29177, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fb6dd5a5000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P \2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1857312, ...}) = 0
+mmap(NULL, 3965632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fb6dcfc4000
+mprotect(0x7fb6dd182000, 2097152, PROT_NONE) = 0
+mmap(0x7fb6dd382000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1be000) = 0x7fb6dd382000
+mmap(0x7fb6dd388000, 17088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fb6dd388000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fb6dd5a4000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fb6dd5a2000
+arch_prctl(ARCH_SET_FS, 0x7fb6dd5a2740) = 0
+mprotect(0x7fb6dd382000, 16384, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7fb6dd5af000, 4096, PROT_READ) = 0
+munmap(0x7fb6dd5a5000, 29177)           = 0
+read(0, "h", 1)                         = 1
+write(1, "h", 1)                        = 1
+read(0, "o", 1)                         = 1
+write(1, "o", 1)                        = 1
+read(0, "g", 1)                         = 1
+write(1, "g", 1)                        = 1
+read(0, "e", 1)                         = 1
+write(1, "e", 1)                        = 1
+read(0, "\n", 1)                        = 1
+write(1, "\n", 1)                       = 1
+read(0, "", 1)                          = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+
+fread()/fwrite()はそれぞれ1回しかread()/write()をよんでいない
+$ strace /tmp/ex02-02 < /tmp/test.txt > /dev/null
+execve("/tmp/ex02-02", ["/tmp/ex02-02"], [/* 19 vars */]) = 0
+brk(0)                                  = 0x20d5000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fda817ef000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=29177, ...}) = 0
+mmap(NULL, 29177, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fda817e7000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P \2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1857312, ...}) = 0
+mmap(NULL, 3965632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fda81206000
+mprotect(0x7fda813c4000, 2097152, PROT_NONE) = 0
+mmap(0x7fda815c4000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1be000) = 0x7fda815c4000
+mmap(0x7fda815ca000, 17088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fda815ca000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fda817e6000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fda817e4000
+arch_prctl(ARCH_SET_FS, 0x7fda817e4740) = 0
+mprotect(0x7fda815c4000, 16384, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7fda817f1000, 4096, PROT_READ) = 0
+munmap(0x7fda817e7000, 29177)           = 0
+fstat(0, {st_mode=S_IFREG|0644, st_size=5, ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fda817ee000
+read(0, "hoge\n", 4096)                 = 5
+fstat(1, {st_mode=S_IFCHR|0666, st_rdev=makedev(1, 3), ...}) = 0
+ioctl(1, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or TCGETS, 0x7fff70afe070) = -1 ENOTTY (Inappropriate ioctl for device)
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fda817ed000
+read(0, "", 4096)                       = 0
+write(1, "hoge\n", 5)                   = 5
+exit_group(0)                           = ?
++++ exited with 0 +++
