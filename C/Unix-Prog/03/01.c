@@ -5,8 +5,10 @@
 
 int main(void)
 {
-  int fd;
+  int fd, fd2;
   if ((fd = open("/tmp/test.txt", O_RDONLY)) < 0)
-    perror("test");
+    perror("open");
+  if ((fd2 = open("/tmp/log.txt", O_WRONLY| O_CREAT, 0644)) < 0)
+    perror("open2");
   return 0;
 }
