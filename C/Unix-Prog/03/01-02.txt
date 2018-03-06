@@ -1,0 +1,78 @@
+open -> writeだとシステムコールを毎回実行しているのに対し
+fopen -> fputsだとまとめて書き込んでいるためwriteが一回で済んでいる
+$ strace ./01.out
+execve("./01.out", ["./01.out"], [/* 65 vars */]) = 0
+brk(NULL)                               = 0x91b000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=81145, ...}) = 0
+mmap(NULL, 81145, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f2a5ea32000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\t\2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1868984, ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f2a5ea31000
+mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f2a5e457000
+mprotect(0x7f2a5e617000, 2097152, PROT_NONE) = 0
+mmap(0x7f2a5e817000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7f2a5e817000
+mmap(0x7f2a5e81d000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f2a5e81d000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f2a5ea30000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f2a5ea2f000
+arch_prctl(ARCH_SET_FS, 0x7f2a5ea30700) = 0
+mprotect(0x7f2a5e817000, 16384, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7f2a5ea46000, 4096, PROT_READ) = 0
+munmap(0x7f2a5ea32000, 81145)           = 0
+open("/tmp/test.txt", O_RDONLY)         = 3
+open("/tmp/log.txt", O_WRONLY|O_CREAT, 0644) = 4
+write(4, "12345", 5)                    = 5 // write()を2回読んでいる
+write(4, "67890", 5)                    = 5
+close(4)                                = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+
+
+$ strace ./03.out 
+execve("./03.out", ["./03.out"], [/* 65 vars */]) = 0
+brk(NULL)                               = 0x1020000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=81145, ...}) = 0
+mmap(NULL, 81145, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fef065ab000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\t\2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1868984, ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fef065aa000
+mmap(NULL, 3971488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7fef05fd0000
+mprotect(0x7fef06190000, 2097152, PROT_NONE) = 0
+mmap(0x7fef06390000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c0000) = 0x7fef06390000
+mmap(0x7fef06396000, 14752, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7fef06396000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fef065a9000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fef065a8000
+arch_prctl(ARCH_SET_FS, 0x7fef065a9700) = 0
+mprotect(0x7fef06390000, 16384, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7fef065bf000, 4096, PROT_READ) = 0
+munmap(0x7fef065ab000, 81145)           = 0
+brk(NULL)                               = 0x1020000
+brk(0x1041000)                          = 0x1041000
+open("/tmp/test.txt", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+fstat(3, {st_mode=S_IFREG|0664, st_size=0, ...}) = 0
+write(3, "1234567890", 10)              = 10
+close(3)                                = 0
+open("/tmp/test.txt", O_RDONLY)         = 3
+fstat(3, {st_mode=S_IFREG|0664, st_size=10, ...}) = 0
+read(3, "1234567890", 4096)             = 10 // write()は１回だけ
+read(3, "", 4096)                       = 0
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 4), ...}) = 0
+close(3)                                = 0
+write(1, "1234567890", 101234567890)              = 10
+exit_group(0)                           = ?
++++ exited with 0 +++
