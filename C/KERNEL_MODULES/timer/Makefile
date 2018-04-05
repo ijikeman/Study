@@ -1,6 +1,6 @@
 obj-m := timer1.o
 
-KDIR    := /lib/modules/(uname -r)/build
+KDIR    := /lib/modules/$(shell uname -r)/build
 PWD     := $(shell pwd)
 VERBOSE = 0
 
