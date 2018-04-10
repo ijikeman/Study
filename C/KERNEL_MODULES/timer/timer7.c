@@ -11,18 +11,17 @@ static char testbuf[128];
 
 struct timer_list mytimer;
 
-#define MYTIMER_TIMEOUT_SECS    ((unsigned long)1000)
+static unsigned long mytimer_timeout_msecs = 1000 * 1000; // mili secs単位に変更し、値を1000sに変更
 
 static void mytimer_fn(unsigned long arg)
 {
-        printk(KERN_ALERT "%lu secs passed.\n", MYTIMER_TIMEOUT_SECS);
+        printk(KERN_ALERT "%lu secs passed.\n", mytimer_timeout_msecs / 1000);
 }
 
 static ssize_t mytimer_remain_msecs_read(struct file *f, char __user *buf, size_t len, loff_t *ppos)
 {
-        printk(KERN_ALERT "call mytimer_remain_msecs_read()");
-
         unsigned long diff_msecs, now = jiffies;
+        printk(KERN_ALERT "call mytimer_remain_msecs_read()");
 
         if (time_after(mytimer.expires, now))
                 diff_msecs = (mytimer.expires - now) * 1000 / HZ;
@@ -56,7 +55,7 @@ static struct file_operations test_fops = {
 static int mymodule_init(void)
 {
         init_timer(&mytimer);
-        mytimer.expires = jiffies + MYTIMER_TIMEOUT_SECS*HZ;
+        mytimer.expires = jiffies + mytimer_timeout_msecs*HZ;
         mytimer.data = 0;
         mytimer.function = mytimer_fn;
         add_timer(&mytimer);
@@ -73,7 +72,7 @@ static int mymodule_init(void)
 
 static void mymodule_exit(void)
 {
-        debugfs_remove_recursive(topdir); // /sys/kernel/debug/mytimer/再帰削除
+        debugfs_remove_recursive(topdir);
         del_timer(&mytimer);
 }
 

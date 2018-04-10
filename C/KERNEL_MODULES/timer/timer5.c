@@ -19,9 +19,9 @@ static void mytimer_fn(unsigned long arg)
 
 static ssize_t mytimer_remain_msecs_read(struct file *f, char __user *buf, size_t len, loff_t *ppos)
 {
-        printk(KERN_ALERT "call mytimer_remain_msecs_read()");
-
         unsigned long diff_msecs, now = jiffies;
+
+        printk(KERN_ALERT "call mytimer_remain_msecs_read()");
 
         if (time_after(mytimer.expires, now)) // 時刻aが時刻bより先であれば1を、そうでなければ0を返す。 unsigned long型での比較なのでtime_after()を使っている
                 diff_msecs = (mytimer.expires - now) * 1000 / HZ;
