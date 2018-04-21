@@ -1,4 +1,4 @@
-obj-m := timer1.o timer2.o timer3.o timer4.o timer5.o timer6.o timer7.o
+obj-m := timer1.o timer2.o timer3.o timer4.o timer5.o timer6.o timer7.o timer8.o
 
 KDIR    := /lib/modules/$(shell uname -r)/build
 PWD     := $(shell pwd)
