@@ -1,4 +1,4 @@
-obj-m := list.o
+obj-m := list1.o
 
 KDIR    := /lib/modules/$(shell uname -r)/build
 PWD     := $(shell pwd)
