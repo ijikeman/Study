@@ -19,10 +19,10 @@ def main():
         pygame.draw.rect(SURFACE, (255,0,0),
                          (10,20,100,50))
         
-        pygame.draw.rect(SURFACE, (255,0,0)
+        pygame.draw.rect(SURFACE, (255,0,0),
                          (150,10,100,30), 3)
 
-        pygame.draw.rect(SURFACE, (0,255,0)
+        pygame.draw.rect(SURFACE, (0,255,0),
                          ((100, 80),(80, 50)))
         
         rect0 = Rect(200,60,140,80)
