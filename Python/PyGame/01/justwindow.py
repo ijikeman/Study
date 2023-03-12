@@ -20,5 +20,5 @@ def main():
 
         pygame.display.update() # 再描画
     
-    if ___name__ == '__main__':
-       main()
+if __name__ == '__main__':
+    main()
