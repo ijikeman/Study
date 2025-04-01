@@ -12,5 +12,6 @@
     ],
     "postCreateCommand": "npm install",
     "remoteUser": "node",
-    "workspaceFolder": "/workspace"
+    "workspaceFolder": "/workspaces/Study/Nodejs/react_test"
 }
+
