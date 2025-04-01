@@ -1,6 +1,6 @@
 import './App.css';
 import Header from './components/Header';
-import 'components/Count';
+
 function App() {
   return (
     <div>
@@ -8,7 +8,6 @@ function App() {
       <Header />
       <p>Welcome to my first React app.</p>
     </div>
-    <Count />
   );
 }
 export default App;
