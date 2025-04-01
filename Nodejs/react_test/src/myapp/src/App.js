@@ -1,13 +1,15 @@
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
 import Header from './components/Header';
 
 function App() {
   return (
-    <div>
-      <h1>Hello, React!</h1>
+    <Router>
       <Header />
-      <p>Welcome to my first React app.</p>
-    </div>
+      <AppRoutes />
+    </Router>
   );
 }
+
 export default App;
